@@ -11,6 +11,7 @@ import cssutils
 import requests
 from lxml import etree
 from lxml.cssselect import CSSSelector
+from cssselect.parser import SelectorSyntaxError
 
 from premailer.cache import function_cache
 from premailer.merge_style import csstext_to_pairs, merge_styles
@@ -441,7 +442,11 @@ class Premailer(object):
                 selector = new_selector
 
             assert selector
-            sel = _create_cssselector(selector)
+            try:
+                sel = _create_cssselector(selector)
+            except SelectorSyntaxError:
+                # TODO: this should be optional
+                next
             items = sel(page)
             if len(items):
                 # same so process it first
